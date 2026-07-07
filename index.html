@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daytoday</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Study companion</p>
+          <h1>Daytoday</h1>
+          <p class="hero-copy">A calm place to shape your week, whatever you are learning.</p>
+        </div>
+        <p class="save-status" id="saveStatus" aria-live="polite">Saved locally</p>
+      </header>
+
+      <main class="dashboard">
+        <section class="card today-card" id="todayCard">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Today</p>
+              <h2 id="todaySubject">Today’s focus</h2>
+            </div>
+            <div class="status-pill" id="todayStatus">Today</div>
+          </div>
+
+          <p class="progress-message" id="progressMessage">A calm start is enough.</p>
+
+          <label class="field-label" for="focusInput">Today's Focus</label>
+          <input id="focusInput" class="focus-input" type="text" placeholder="What are you working on today?" />
+
+          <label class="field-label" for="checklist">Goals / Tasks</label>
+          <ul class="checklist" id="checklist" aria-label="Goals and tasks"></ul>
+
+          <div class="checklist-actions">
+            <button class="secondary-btn" id="addGoalBtn" type="button">Add task</button>
+            <button class="primary-btn" id="completeTodayBtn" type="button">Complete today</button>
+          </div>
+
+          <label class="field-label" for="notesInput">Notes</label>
+          <textarea id="notesInput" rows="5" placeholder="Write whatever feels helpful..."></textarea>
+
+          <label class="field-label" for="resourcesInput">Resources</label>
+          <textarea id="resourcesInput" rows="3" placeholder="Links, references, or ideas. One per line."></textarea>
+        </section>
+
+        <section class="card week-card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Week</p>
+              <h2>This week</h2>
+            </div>
+          </div>
+          <div class="week-grid" id="weekGrid"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
