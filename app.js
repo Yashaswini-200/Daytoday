@@ -10,6 +10,7 @@
     Sunday: "Deep Study"
   };
   const STORAGE_KEY = "daytoday-state";
+  const THEME_STORAGE_KEY = "daytoday-theme";
 
   const todayLabel = document.getElementById("todaySubject");
   const checklistEl = document.getElementById("checklist");
@@ -25,8 +26,6 @@
   const todayStatus = document.getElementById("todayStatus");
   const saveStatus = document.getElementById("saveStatus");
   const heroGreetingEl = document.getElementById("heroGreeting");
-  const heroDayEl = document.getElementById("heroDay");
-  const heroSubjectEl = document.getElementById("heroSubject");
   const heroProgressPercentEl = document.getElementById("heroProgressPercent");
   const heroProgressRingEl = document.getElementById("heroProgressRing");
   const weeklyProgressRingEl = document.getElementById("weeklyProgressRing");
@@ -34,15 +33,23 @@
   const weeklyProgressValueEl = document.getElementById("weeklyProgressValue");
   const todayProgressValueEl = document.getElementById("todayProgressValue");
   const todayProgressBarEl = document.getElementById("todayProgressBar");
+  const todayProgressBarWrapEl = document.getElementById("todayProgressBarWrap");
+  const todayProgressEmptyEl = document.getElementById("todayProgressEmpty");
   const todaySummaryValueEl = document.getElementById("todaySummaryValue");
   const todaySummaryMeterEl = document.getElementById("todaySummaryMeter");
+  const todaySummaryMeterWrapEl = document.getElementById("todaySummaryMeterWrap");
+  const todaySummaryEmptyEl = document.getElementById("todaySummaryEmpty");
   const notesHintEl = document.getElementById("notesHint");
   const resourcesHintEl = document.getElementById("resourcesHint");
+  const themeToggleEl = document.getElementById("themeToggle");
+  const themeToggleIconEl = themeToggleEl?.querySelector(".theme-toggle__icon");
+  const themeToggleLabelEl = themeToggleEl?.querySelector(".theme-toggle__label");
 
   const state = loadState();
   const todayName = getTodayName();
 
   function init() {
+    applyTheme(getStoredTheme());
     renderTodayView();
     renderWeekView();
     bindEvents();
@@ -57,6 +64,7 @@
     resourcesInput.addEventListener("input", handleResourcesInput);
     addGoalBtn.addEventListener("click", addGoal);
     completeTodayBtn.addEventListener("click", finishToday);
+    themeToggleEl?.addEventListener("click", toggleTheme);
   }
 
   function loadState() {
@@ -75,6 +83,34 @@
 
   function saveState() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function getStoredTheme() {
+    const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    if (storedTheme === "dark" || storedTheme === "light") {
+      return storedTheme;
+    }
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+
+  function applyTheme(theme) {
+    const resolvedTheme = theme === "dark" ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", resolvedTheme);
+    localStorage.setItem(THEME_STORAGE_KEY, resolvedTheme);
+    if (themeToggleIconEl) {
+      themeToggleIconEl.textContent = resolvedTheme === "dark" ? "☀" : "🌙";
+    }
+    if (themeToggleLabelEl) {
+      themeToggleLabelEl.textContent = resolvedTheme === "dark" ? "Light" : "Dark";
+    }
+    if (themeToggleEl) {
+      themeToggleEl.setAttribute("aria-label", resolvedTheme === "dark" ? "Switch to light mode" : "Switch to dark mode");
+    }
+  }
+
+  function toggleTheme() {
+    const nextTheme = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    applyTheme(nextTheme);
   }
 
   function getTodayName() {
@@ -154,8 +190,6 @@
     todayLabel.textContent = `${entry.day} • ${subject}`;
     todayStatus.textContent = entry.completed ? "Done" : "Today";
     heroGreetingEl.textContent = getGreeting();
-    heroDayEl.textContent = entry.day;
-    heroSubjectEl.textContent = subject;
 
     focusInput.value = entry.focus;
     checklistEl.innerHTML = "";
@@ -182,6 +216,7 @@
     notesHintEl.hidden = entry.notes.trim().length > 0;
     resourcesInput.value = entry.resources.join("\n");
     resourcesHintEl.hidden = entry.resources.length > 0;
+    updateActionButtons(entry);
     updateProgressMessage(entry);
     updateProgressVisuals(entry);
   }
@@ -198,18 +233,37 @@
       const card = document.createElement("div");
       const preview = entry.focus.trim() ? entry.focus.trim() : "Your focus";
       const subject = DAY_SUBJECTS[dayName] || "Study";
+      const actionLabel = entry.completed ? "Review" : isToday ? "Your focus" : "Open";
+      const actionClass = entry.completed ? "day-action--done" : isToday ? "day-action--today" : "day-action--upcoming";
       card.className = `day-card${isToday ? " today" : ""}${entry.completed ? " done" : " upcoming"}`;
       card.innerHTML = `
         <div class="day-meta">
           <div class="day-title">${dayName}</div>
           <div class="day-subject">${subject}</div>
         </div>
-        <div class="day-state">${entry.completed ? "✓ Done" : isToday ? "Today" : preview}</div>
+        <div class="day-actions">
+          <div class="day-state">${entry.completed ? "✓ Done" : isToday ? "Today" : preview}</div>
+          <button class="day-action ${actionClass}" type="button">${actionLabel}</button>
+        </div>
       `;
       weekGrid.appendChild(card);
     });
 
     updateProgressVisuals(getEntryForToday());
+  }
+
+  function updateActionButtons(entry) {
+    if (entry.tasks.length === 0) {
+      addGoalBtn.classList.remove("secondary-btn");
+      addGoalBtn.classList.add("primary-btn");
+      completeTodayBtn.classList.remove("primary-btn");
+      completeTodayBtn.classList.add("secondary-btn");
+    } else {
+      addGoalBtn.classList.remove("primary-btn");
+      addGoalBtn.classList.add("secondary-btn");
+      completeTodayBtn.classList.remove("secondary-btn");
+      completeTodayBtn.classList.add("primary-btn");
+    }
   }
 
   function handleFocusInput(event) {
@@ -327,6 +381,14 @@
     todaySummaryMeterEl.style.width = `${todayPercent}%`;
     weeklyProgressPercentEl.textContent = `${weeklyPercent}%`;
     weeklyProgressValueEl.textContent = `${weeklyData.completedDays}/${WEEK_DAYS.length} days`;
+
+    const hasTasks = total > 0;
+    todayProgressValueEl.hidden = !hasTasks;
+    todayProgressBarWrapEl.hidden = !hasTasks;
+    todayProgressEmptyEl.hidden = hasTasks;
+    todaySummaryValueEl.hidden = !hasTasks;
+    todaySummaryMeterWrapEl.hidden = !hasTasks;
+    todaySummaryEmptyEl.hidden = hasTasks;
 
     updateRing(heroProgressRingEl, todayPercent);
     updateRing(weeklyProgressRingEl, weeklyPercent);

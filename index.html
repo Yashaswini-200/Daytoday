@@ -15,8 +15,6 @@
           <p class="hero-copy">A calm place to shape your week, whatever you are learning.</p>
           <div class="hero-highlights">
             <div class="hero-chip" id="heroGreeting">Good morning</div>
-            <div class="hero-chip hero-chip-soft" id="heroDay">Monday</div>
-            <div class="hero-chip hero-chip-ghost" id="heroSubject">Embedded C</div>
           </div>
         </div>
 
@@ -37,7 +35,13 @@
               <p class="hero-progress-message" id="heroProgressSummary">A calm start is enough.</p>
             </div>
           </div>
-          <p class="save-status" id="saveStatus" aria-live="polite">Saved locally</p>
+          <div class="hero-actions">
+            <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">
+              <span class="theme-toggle__icon" aria-hidden="true">🌙</span>
+              <span class="theme-toggle__label">Dark</span>
+            </button>
+            <p class="save-status" id="saveStatus" aria-live="polite">Saved locally</p>
+          </div>
         </div>
       </header>
 
@@ -56,17 +60,20 @@
               <span class="progress-title">Today’s progress</span>
               <span class="progress-value" id="todayProgressValue">0/0</span>
             </div>
-            <div class="progress-bar" aria-hidden="true">
+            <div class="progress-bar" id="todayProgressBarWrap" aria-hidden="true">
               <span id="todayProgressBar"></span>
             </div>
+            <p class="progress-empty" id="todayProgressEmpty" hidden>A calm start is enough.</p>
             <p class="progress-message" id="progressMessage">A calm start is enough.</p>
           </div>
 
-          <label class="field-label" for="focusInput">Today's Focus</label>
-          <input id="focusInput" class="focus-input" type="text" placeholder="What are you working on today?" />
+          <div class="focus-section">
+            <label class="field-label" for="focusInput">Today's Focus</label>
+            <input id="focusInput" class="focus-input" type="text" placeholder="What are you working on today?" />
 
-          <label class="field-label" for="checklist">Goals / Tasks</label>
-          <ul class="checklist" id="checklist" aria-label="Goals and tasks"></ul>
+            <label class="field-label" for="checklist">Goals / Tasks</label>
+            <ul class="checklist" id="checklist" aria-label="Goals and tasks"></ul>
+          </div>
 
           <div class="checklist-actions">
             <button class="secondary-btn" id="addGoalBtn" type="button">Add task</button>
@@ -109,8 +116,9 @@
               <div class="summary-copy">
                 <p class="summary-label">Today’s progress</p>
                 <p class="summary-value" id="todaySummaryValue">0/0 tasks</p>
+                <p class="summary-empty" id="todaySummaryEmpty" hidden>A calm start is enough.</p>
               </div>
-              <div class="summary-meter" aria-hidden="true">
+              <div class="summary-meter" id="todaySummaryMeterWrap" aria-hidden="true">
                 <span id="todaySummaryMeter"></span>
               </div>
             </article>
