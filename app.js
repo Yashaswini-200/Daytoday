@@ -2,18 +2,19 @@
   const WEEK_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const DAY_SUBJECTS = {
     Monday: "Embedded C",
-    Tuesday: "DSA in C",
+    Tuesday: "DSA",
     Wednesday: "Core Electronics",
     Thursday: "Linux",
-    Friday: "Revision / Interview Preparation",
+    Friday: "Revision",
     Saturday: "Projects",
-    Sunday: "Deep Study / Pending Work"
+    Sunday: "Deep Study"
   };
   const STORAGE_KEY = "daytoday-state";
 
   const todayLabel = document.getElementById("todaySubject");
   const checklistEl = document.getElementById("checklist");
   const progressMessageEl = document.getElementById("progressMessage");
+  const heroProgressSummaryEl = document.getElementById("heroProgressSummary");
   const notesInput = document.getElementById("notesInput");
   const focusInput = document.getElementById("focusInput");
   const resourcesInput = document.getElementById("resourcesInput");
@@ -23,6 +24,20 @@
   const todayCard = document.getElementById("todayCard");
   const todayStatus = document.getElementById("todayStatus");
   const saveStatus = document.getElementById("saveStatus");
+  const heroGreetingEl = document.getElementById("heroGreeting");
+  const heroDayEl = document.getElementById("heroDay");
+  const heroSubjectEl = document.getElementById("heroSubject");
+  const heroProgressPercentEl = document.getElementById("heroProgressPercent");
+  const heroProgressRingEl = document.getElementById("heroProgressRing");
+  const weeklyProgressRingEl = document.getElementById("weeklyProgressRing");
+  const weeklyProgressPercentEl = document.getElementById("weeklyProgressPercent");
+  const weeklyProgressValueEl = document.getElementById("weeklyProgressValue");
+  const todayProgressValueEl = document.getElementById("todayProgressValue");
+  const todayProgressBarEl = document.getElementById("todayProgressBar");
+  const todaySummaryValueEl = document.getElementById("todaySummaryValue");
+  const todaySummaryMeterEl = document.getElementById("todaySummaryMeter");
+  const notesHintEl = document.getElementById("notesHint");
+  const resourcesHintEl = document.getElementById("resourcesHint");
 
   const state = loadState();
   const todayName = getTodayName();
@@ -138,6 +153,9 @@
     const subject = DAY_SUBJECTS[entry.day] || "Study";
     todayLabel.textContent = `${entry.day} • ${subject}`;
     todayStatus.textContent = entry.completed ? "Done" : "Today";
+    heroGreetingEl.textContent = getGreeting();
+    heroDayEl.textContent = entry.day;
+    heroSubjectEl.textContent = subject;
 
     focusInput.value = entry.focus;
     checklistEl.innerHTML = "";
@@ -145,7 +163,7 @@
     if (entry.tasks.length === 0) {
       const emptyState = document.createElement("li");
       emptyState.className = "checklist-empty";
-      emptyState.textContent = "Add one task to get started.";
+      emptyState.textContent = "Nothing planned yet. Add your first task.";
       checklistEl.appendChild(emptyState);
     } else {
       entry.tasks.forEach((task, index) => {
@@ -161,8 +179,11 @@
     }
 
     notesInput.value = entry.notes;
+    notesHintEl.hidden = entry.notes.trim().length > 0;
     resourcesInput.value = entry.resources.join("\n");
+    resourcesHintEl.hidden = entry.resources.length > 0;
     updateProgressMessage(entry);
+    updateProgressVisuals(entry);
   }
 
   function renderWeekView() {
@@ -187,6 +208,8 @@
       `;
       weekGrid.appendChild(card);
     });
+
+    updateProgressVisuals(getEntryForToday());
   }
 
   function handleFocusInput(event) {
@@ -194,7 +217,6 @@
     entry.focus = event.target.value;
     saveState();
     showSaveFeedback();
-    renderTodayView();
     renderWeekView();
   }
 
@@ -248,6 +270,7 @@
     entry.notes = event.target.value;
     saveState();
     showSaveFeedback();
+    notesHintEl.hidden = entry.notes.trim().length > 0;
   }
 
   function handleResourcesInput(event) {
@@ -258,6 +281,7 @@
       .filter(Boolean);
     saveState();
     showSaveFeedback();
+    resourcesHintEl.hidden = entry.resources.length > 0;
   }
 
   function addGoal() {
@@ -288,6 +312,50 @@
     setProgressMessage(message);
   }
 
+  function updateProgressVisuals(entry) {
+    const doneCount = entry.tasks.filter((task) => task.done).length;
+    const total = entry.tasks.length;
+    const todayPercent = total === 0 ? 0 : Math.round((doneCount / total) * 100);
+
+    const weeklyData = getWeeklyProgress();
+    const weeklyPercent = Math.round((weeklyData.completedDays / WEEK_DAYS.length) * 100);
+
+    heroProgressPercentEl.textContent = `${todayPercent}%`;
+    todayProgressValueEl.textContent = `${doneCount}/${total}`;
+    todayProgressBarEl.style.width = `${todayPercent}%`;
+    todaySummaryValueEl.textContent = `${doneCount}/${total} tasks`;
+    todaySummaryMeterEl.style.width = `${todayPercent}%`;
+    weeklyProgressPercentEl.textContent = `${weeklyPercent}%`;
+    weeklyProgressValueEl.textContent = `${weeklyData.completedDays}/${WEEK_DAYS.length} days`;
+
+    updateRing(heroProgressRingEl, todayPercent);
+    updateRing(weeklyProgressRingEl, weeklyPercent);
+  }
+
+  function getWeeklyProgress() {
+    const startOfWeek = getStartOfWeek(new Date());
+    const completedDays = WEEK_DAYS.reduce((count, dayName, index) => {
+      const dateForDay = new Date(startOfWeek);
+      dateForDay.setDate(startOfWeek.getDate() + index);
+      const entry = getEntryForDate(dateForDay);
+      return count + (entry.completed ? 1 : 0);
+    }, 0);
+
+    return { completedDays };
+  }
+
+  function updateRing(element, percent) {
+    if (!element) {
+      return;
+    }
+
+    const radius = 48;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (percent / 100) * circumference;
+    element.style.strokeDasharray = `${circumference}`;
+    element.style.strokeDashoffset = `${offset}`;
+  }
+
   function finishToday() {
     const entry = getEntryForToday();
     entry.tasks = entry.tasks.map((task) => ({ ...task, done: true }));
@@ -303,6 +371,7 @@
 
   function setProgressMessage(message) {
     progressMessageEl.textContent = message;
+    heroProgressSummaryEl.textContent = message;
     progressMessageEl.classList.remove("is-updating");
     void progressMessageEl.offsetWidth;
     progressMessageEl.classList.add("is-updating");
@@ -316,6 +385,17 @@
       saveStatus.classList.remove("is-saving");
       saveStatus.textContent = "Saved locally";
     }, 700);
+  }
+
+  function getGreeting() {
+    const hour = new Date().getHours();
+    if (hour < 12) {
+      return "Good morning";
+    }
+    if (hour < 18) {
+      return "Good afternoon";
+    }
+    return "Good evening";
   }
 
   function getStartOfWeek(date) {

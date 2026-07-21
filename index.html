@@ -9,12 +9,36 @@
   <body>
     <div class="page-shell">
       <header class="hero">
-        <div>
+        <div class="hero-copy-block">
           <p class="eyebrow">Study companion</p>
           <h1>Daytoday</h1>
           <p class="hero-copy">A calm place to shape your week, whatever you are learning.</p>
+          <div class="hero-highlights">
+            <div class="hero-chip" id="heroGreeting">Good morning</div>
+            <div class="hero-chip hero-chip-soft" id="heroDay">Monday</div>
+            <div class="hero-chip hero-chip-ghost" id="heroSubject">Embedded C</div>
+          </div>
         </div>
-        <p class="save-status" id="saveStatus" aria-live="polite">Saved locally</p>
+
+        <div class="hero-side">
+          <div class="hero-progress" id="heroProgress">
+            <div class="progress-ring" aria-hidden="true">
+              <svg viewBox="0 0 120 120">
+                <circle class="ring-track" cx="60" cy="60" r="48"></circle>
+                <circle class="ring-fill" id="heroProgressRing" cx="60" cy="60" r="48"></circle>
+              </svg>
+              <div class="ring-label">
+                <span id="heroProgressPercent">0%</span>
+                <small>today</small>
+              </div>
+            </div>
+            <div class="hero-progress-copy">
+              <p class="hero-progress-title">Today’s momentum</p>
+              <p class="hero-progress-message" id="heroProgressSummary">A calm start is enough.</p>
+            </div>
+          </div>
+          <p class="save-status" id="saveStatus" aria-live="polite">Saved locally</p>
+        </div>
       </header>
 
       <main class="dashboard">
@@ -27,7 +51,16 @@
             <div class="status-pill" id="todayStatus">Today</div>
           </div>
 
-          <p class="progress-message" id="progressMessage">A calm start is enough.</p>
+          <div class="today-progress">
+            <div class="progress-meta">
+              <span class="progress-title">Today’s progress</span>
+              <span class="progress-value" id="todayProgressValue">0/0</span>
+            </div>
+            <div class="progress-bar" aria-hidden="true">
+              <span id="todayProgressBar"></span>
+            </div>
+            <p class="progress-message" id="progressMessage">A calm start is enough.</p>
+          </div>
 
           <label class="field-label" for="focusInput">Today's Focus</label>
           <input id="focusInput" class="focus-input" type="text" placeholder="What are you working on today?" />
@@ -41,19 +74,48 @@
           </div>
 
           <label class="field-label" for="notesInput">Notes</label>
-          <textarea id="notesInput" rows="5" placeholder="Write whatever feels helpful..."></textarea>
+          <textarea id="notesInput" class="notes-input" rows="5" placeholder="Write whatever feels helpful..."></textarea>
+          <p class="field-hint" id="notesHint">A few lines can keep the day clear.</p>
 
           <label class="field-label" for="resourcesInput">Resources</label>
-          <textarea id="resourcesInput" rows="3" placeholder="Links, references, or ideas. One per line."></textarea>
+          <textarea id="resourcesInput" class="resources-input" rows="3" placeholder="Links, references, or ideas. One per line."></textarea>
+          <p class="field-hint" id="resourcesHint">Keep a few links or references handy.</p>
         </section>
 
         <section class="card week-card">
           <div class="card-header">
             <div>
-              <p class="eyebrow">Week</p>
+              <p class="eyebrow">Weekly rhythm</p>
               <h2>This week</h2>
             </div>
           </div>
+
+          <div class="week-summary">
+            <article class="summary-card summary-card-weekly">
+              <div class="summary-copy">
+                <p class="summary-label">Weekly progress</p>
+                <p class="summary-value" id="weeklyProgressValue">0/7 days</p>
+              </div>
+              <div class="summary-ring">
+                <svg viewBox="0 0 120 120">
+                  <circle class="ring-track" cx="60" cy="60" r="48"></circle>
+                  <circle class="ring-fill weekly-fill" id="weeklyProgressRing" cx="60" cy="60" r="48"></circle>
+                </svg>
+                <span class="summary-ring-value" id="weeklyProgressPercent">0%</span>
+              </div>
+            </article>
+
+            <article class="summary-card summary-card-today">
+              <div class="summary-copy">
+                <p class="summary-label">Today’s progress</p>
+                <p class="summary-value" id="todaySummaryValue">0/0 tasks</p>
+              </div>
+              <div class="summary-meter" aria-hidden="true">
+                <span id="todaySummaryMeter"></span>
+              </div>
+            </article>
+          </div>
+
           <div class="week-grid" id="weekGrid"></div>
         </section>
       </main>
