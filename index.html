@@ -10,31 +10,17 @@
     <div class="page-shell">
       <header class="hero">
         <div class="hero-copy-block">
-          <p class="eyebrow">Study companion</p>
+          <p class="eyebrow">A calmer way to build consistency</p>
           <h1>Daytoday</h1>
-          <p class="hero-copy">A calm place to shape your week, whatever you are learning.</p>
           <div class="hero-highlights">
-            <div class="hero-chip" id="heroGreeting">Good morning</div>
+            <div class="hero-chip hero-date-chip">
+              <span id="currentDateLabel"></span>
+              <time id="currentClock" aria-live="off"></time>
+            </div>
           </div>
         </div>
 
         <div class="hero-side">
-          <div class="hero-progress" id="heroProgress">
-            <div class="progress-ring" aria-hidden="true">
-              <svg viewBox="0 0 120 120">
-                <circle class="ring-track" cx="60" cy="60" r="48"></circle>
-                <circle class="ring-fill" id="heroProgressRing" cx="60" cy="60" r="48"></circle>
-              </svg>
-              <div class="ring-label">
-                <span id="heroProgressPercent">0%</span>
-                <small>today</small>
-              </div>
-            </div>
-            <div class="hero-progress-copy">
-              <p class="hero-progress-title">Today’s momentum</p>
-              <p class="hero-progress-message" id="heroProgressSummary">A calm start is enough.</p>
-            </div>
-          </div>
           <div class="hero-actions">
             <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">
               <span class="theme-toggle__icon" aria-hidden="true">🌙</span>
@@ -46,89 +32,129 @@
       </header>
 
       <main class="dashboard">
-        <section class="card today-card" id="todayCard">
-          <div class="card-header">
+        <section class="monthly-dashboard" id="habitDashboard" aria-labelledby="monthTitle">
+          <div class="month-heading">
             <div>
-              <p class="eyebrow">Today</p>
-              <h2 id="todaySubject">Today’s focus</h2>
+              <p class="eyebrow">Monthly habit dashboard</p>
+              <h2 id="monthTitle"></h2>
             </div>
-            <div class="status-pill" id="todayStatus">Today</div>
-          </div>
-
-          <div class="today-progress">
-            <div class="progress-meta">
-              <span class="progress-title">Today’s progress</span>
-              <span class="progress-value" id="todayProgressValue">0/0</span>
-            </div>
-            <div class="progress-bar" id="todayProgressBarWrap" aria-hidden="true">
-              <span id="todayProgressBar"></span>
-            </div>
-            <p class="progress-empty" id="todayProgressEmpty" hidden>A calm start is enough.</p>
-            <p class="progress-message" id="progressMessage">A calm start is enough.</p>
-          </div>
-
-          <div class="focus-section">
-            <label class="field-label" for="focusInput">Today's Focus</label>
-            <input id="focusInput" class="focus-input" type="text" placeholder="What are you working on today?" />
-
-            <label class="field-label" for="checklist">Goals / Tasks</label>
-            <ul class="checklist" id="checklist" aria-label="Goals and tasks"></ul>
-          </div>
-
-          <div class="checklist-actions">
-            <button class="secondary-btn" id="addGoalBtn" type="button">Add task</button>
-            <button class="primary-btn" id="completeTodayBtn" type="button">Complete today</button>
-          </div>
-
-          <label class="field-label" for="notesInput">Notes</label>
-          <textarea id="notesInput" class="notes-input" rows="5" placeholder="Write whatever feels helpful..."></textarea>
-          <p class="field-hint" id="notesHint">A few lines can keep the day clear.</p>
-
-          <label class="field-label" for="resourcesInput">Resources</label>
-          <textarea id="resourcesInput" class="resources-input" rows="3" placeholder="Links, references, or ideas. One per line."></textarea>
-          <p class="field-hint" id="resourcesHint">Keep a few links or references handy.</p>
-        </section>
-
-        <section class="card week-card">
-          <div class="card-header">
-            <div>
-              <p class="eyebrow">Weekly rhythm</p>
-              <h2>This week</h2>
+            <div class="month-navigation" aria-label="Calendar navigation">
+              <button class="secondary-btn" id="previousMonth" type="button" aria-label="Previous month">←</button>
+              <button class="secondary-btn" id="goToToday" type="button">Today</button>
+              <button class="secondary-btn" id="nextMonth" type="button" aria-label="Next month">→</button>
             </div>
           </div>
 
-          <div class="week-summary">
-            <article class="summary-card summary-card-weekly">
-              <div class="summary-copy">
-                <p class="summary-label">Weekly progress</p>
-                <p class="summary-value" id="weeklyProgressValue">0/7 days</p>
-              </div>
-              <div class="summary-ring">
-                <svg viewBox="0 0 120 120">
-                  <circle class="ring-track" cx="60" cy="60" r="48"></circle>
-                  <circle class="ring-fill weekly-fill" id="weeklyProgressRing" cx="60" cy="60" r="48"></circle>
-                </svg>
-                <span class="summary-ring-value" id="weeklyProgressPercent">0%</span>
-              </div>
+          <div class="month-summary" aria-live="polite">
+            <article class="month-stat">
+              <span class="month-stat-label">Points earned</span>
+              <strong id="monthPoints">0</strong>
+              <small id="monthPointsMaximum">0 max on tracked days</small>
             </article>
-
-            <article class="summary-card summary-card-today">
-              <div class="summary-copy">
-                <p class="summary-label">Today’s progress</p>
-                <p class="summary-value" id="todaySummaryValue">0/0 tasks</p>
-                <p class="summary-empty" id="todaySummaryEmpty" hidden>A calm start is enough.</p>
-              </div>
-              <div class="summary-meter" id="todaySummaryMeterWrap" aria-hidden="true">
-                <span id="todaySummaryMeter"></span>
-              </div>
+            <article class="month-stat">
+              <span class="month-stat-label">Habit completion</span>
+              <strong id="monthCompletionRate">0%</strong>
+              <small id="monthTrackedDays">0 tracked days</small>
+            </article>
+            <article class="month-stat">
+              <span class="month-stat-label">Selected day</span>
+              <strong id="selectedDayPoints">0 / 0</strong>
+              <small id="selectedDayRate">0 / 0 habits complete</small>
+            </article>
+            <article class="month-stat">
+              <span class="month-stat-label">Today</span>
+              <strong id="currentDayPoints">0 / 0</strong>
+              <small id="currentDayRate">0 / 0 habits complete · 0%</small>
             </article>
           </div>
 
-          <div class="week-grid" id="weekGrid"></div>
+          <section class="card calendar-card" aria-labelledby="calendarHeading">
+            <div class="card-header">
+              <div>
+                <p class="eyebrow">Your month</p>
+                <h2 id="calendarHeading">Habit calendar</h2>
+              </div>
+              <p class="calendar-legend">
+                <span class="legend-swatch legend-completed"></span> Completed
+                <span class="legend-swatch legend-not-completed"></span> Not completed
+                <span class="legend-swatch legend-unrecorded"></span> Not recorded
+              </p>
+            </div>
+            <div class="habit-grid-scroll" id="monthCalendarScroll" tabindex="0" aria-label="Scrollable monthly habit grid">
+              <table class="habit-grid" id="monthCalendar" aria-label="Monthly habit tracking grid"></table>
+            </div>
+            <p class="calendar-caption" id="calendarCaption"></p>
+          </section>
+
+          <details class="card habit-card selected-date-panel" id="selectedDatePanel">
+            <summary>
+              <span><span class="eyebrow">Selected date</span><strong id="selectedDateTitle"></strong></span>
+              <span class="status-pill" id="selectedDateStatus">Not tracked</span>
+            </summary>
+            <div class="selected-date-content">
+              <p class="scoring-note">Completed = 1 point. Not completed = 0 points. Not recorded means no status has been saved.</p>
+              <div id="habitList" class="habit-list"></div>
+              <p class="daily-score-line">Daily total <strong id="dailyScore">0 / 0</strong></p>
+            </div>
+          </details>
+
+          <section class="card tracker-card junk-food-card" aria-labelledby="junkFoodTitle">
+            <div class="card-header">
+              <div>
+                <p class="eyebrow">Monthly allowance · not scored</p>
+                <h2 id="junkFoodTitle">Junk-food occasions</h2>
+              </div>
+              <span class="status-pill" id="junkFoodCount">0 / 2</span>
+            </div>
+            <p class="tracker-summary" id="junkFoodRemaining">2 occasions remaining</p>
+            <form id="junkFoodForm" class="tracker-form">
+              <label>Date <input id="junkFoodDate" type="date" required /></label>
+              <label class="wide-field">Optional note <input id="junkFoodNote" type="text" maxlength="160" placeholder="Add a short note" /></label>
+              <button class="primary-btn" type="submit">Record occasion</button>
+            </form>
+            <ul class="record-list" id="junkFoodList"></ul>
+          </section>
+          <p class="month-footnote">Each grid cell shows one habit on one date. Points recorded ahead are visible; monthly progress statistics only count through today.</p>
+          <details class="card habit-settings">
+            <summary>
+              <span><span class="eyebrow">Personal configuration</span><strong>Manage your habits</strong></span>
+              <span class="settings-summary-hint">Add, edit, reorder, or deactivate habits</span>
+            </summary>
+            <p class="settings-intro">Your personal definitions are stored separately from the built-in defaults. Deactivated habits and their dated history are retained. Each completed habit is worth 1 point; there are no bonus points.</p>
+            <div class="settings-layout">
+              <form id="habitDefinitionForm" class="definition-form">
+                <h3 id="habitFormHeading">Add a habit</h3>
+                <input id="definitionId" type="hidden" />
+                <label>Name <input id="definitionName" type="text" maxlength="80" required /></label>
+                <label>Description <input id="definitionDescription" type="text" maxlength="180" /></label>
+                <label>Category <input id="definitionCategory" type="text" maxlength="40" placeholder="e.g. Health" /></label>
+                <label>Target type
+                  <select id="definitionTargetType">
+                    <option value="yes-no">Yes / no</option>
+                    <option value="quantity">Numeric quantity</option>
+                    <option value="duration">Duration</option>
+                    <option value="custom">User-defined</option>
+                  </select>
+                </label>
+                <label>Default target <input id="definitionTarget" type="text" maxlength="120" placeholder="Choose a target" /></label>
+                <label>Unit <input id="definitionUnit" type="text" maxlength="24" placeholder="e.g. minutes, glasses" /></label>
+                <div class="form-actions">
+                  <button class="primary-btn" type="submit">Save habit</button>
+                  <button class="secondary-btn" id="cancelHabitEdit" type="button" hidden>Cancel edit</button>
+                </div>
+              </form>
+              <div>
+                <h3 class="settings-list-heading">Your habits</h3>
+                <ul class="definition-list" id="habitDefinitionList"></ul>
+              </div>
+            </div>
+          </details>
         </section>
+
       </main>
     </div>
 
+    <script src="habit-defaults.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
